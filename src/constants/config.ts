@@ -16,14 +16,6 @@ export const endpoints = {
     createUploads: '/uploads',
     deleteUploads: (id: Id) => `/uploads/${id}`,
   },
-  user: {
-    getAllUsers: '/users',
-    createUser: '/users',
-    getUser: `/users/${userCurrencyStorage}`,
-    getUserById: (id: Id) => `/users/${id}`,
-    updateUser: (id: Id) => `/users/${id}?${urlEndpointsParams}`,
-    deleteUser: (id: Id) => `/users/${id}`,
-  },
   boards: {
     getAllBoards: `/boards?${urlEndpointsParams}`,
     createBoard: '/boards',
@@ -44,14 +36,8 @@ export const endpoints = {
     updateTask: (id: Id) => `/tasks/${id}?${urlEndpointsParams}`,
     deleteTask: (id: Id) => `/tasks/${id}`,
   },
-  notifications: {
-    getAllNotifications: '/notifications',
-    createNotification: '/notifications',
-    updateNotification: (id: Id) => `/notifications/${id}?${urlEndpointsParams}`,
-    deleteNotification: (id: Id) => `/notifications/${id}`,
-  },
 }
 
-export const HOST_API = 'http://192.168.2.15:8000'
+export const HOST_API = 'htt://localhost:8000'
 
 export const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'] as const

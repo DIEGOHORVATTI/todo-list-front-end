@@ -1,13 +1,10 @@
 import { useState } from 'react'
 
-import { styled, alpha } from '@mui/material/styles'
+import { alpha } from '@mui/material/styles'
 
 import Stack from '@mui/material/Stack'
 import Drawer from '@mui/material/Drawer'
 import Button from '@mui/material/Button'
-import Avatar from '@mui/material/Avatar'
-
-import Tooltip from '@mui/material/Tooltip'
 
 import IconButton from '@mui/material/IconButton'
 
@@ -17,15 +14,7 @@ import { Iconify } from '@/components/iconify'
 
 import KanbanInputName from '../kanban-input-name'
 
-import {
-  Autocomplete,
-  ButtonGroup,
-  Chip,
-  Divider,
-  TextField,
-  Typography,
-  useTheme,
-} from '@mui/material'
+import { Autocomplete, Chip, TextField, useTheme } from '@mui/material'
 
 import { ConfirmDialog } from '@/components/custom-dialog'
 
@@ -35,7 +24,7 @@ import FormProvider from '@/components/hook-form/form-provider'
 
 import { RHFDatePiker } from '@/components/hook-form/rhf-date-piker'
 
-import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
@@ -47,28 +36,12 @@ import { categoriesStorage, endpoints, userCurrencyStorage } from '@/constants/c
 import { PriorityValues, priorityValues } from '@/shared/priorityValues'
 import { mutate } from 'swr'
 import { isEqual } from 'lodash'
-import dayjs from 'dayjs'
 
 import { RHFTextField } from '@/components/hook-form'
 import { RHFUpload } from '@/components/hook-form/rhf-upload'
 import { PriorityStatus } from '@/components/PriorityStatus'
 
-import { useRequest } from '@/hooks/use-request'
-import { NotificationAdd } from '@/sections/notifications/notification-add'
-
-import { Responsible } from './Responsible'
-
 import { IKanbanTask } from '@/types/kanban'
-import { Notification } from '@/types/Notification'
-
-import { User } from '@/types/user'
-
-const StyledLabel = styled('span')(({ theme }) => ({
-  ...theme.typography.caption,
-  flexShrink: 0,
-  color: theme.palette.text.secondary,
-  fontWeight: theme.typography.fontWeightSemiBold,
-}))
 
 type Props = {
   task: IKanbanTask
@@ -81,24 +54,8 @@ type AddTask = Omit<IKanbanTask, 'history'>
 export default function KanbanDetails({ task, openDetails, onCloseDetails }: Props) {
   const theme = useTheme()
 
-  const openAddNotification = useBoolean()
-
   const confirmArchive = useBoolean()
   const confirmDelete = useBoolean()
-
-  const viewHistory = useBoolean()
-
-  const { data: user } = useRequest<User>({
-    url: endpoints.user.getUserById(task.userId),
-  })
-
-  const { data: users } = useRequest<Array<User>>({
-    url: endpoints.user.getAllUsers,
-  })
-
-  const { data: notifications } = useRequest<Array<Notification>>({
-    url: endpoints.notifications.getAllNotifications,
-  })
 
   const [taskName, setTaskName] = useState(task.name)
 
@@ -129,15 +86,8 @@ export default function KanbanDetails({ task, openDetails, onCloseDetails }: Pro
 
   const { handleSubmit, setValue, watch, control } = methods
 
-  const assignee = useFieldArray({
-    control,
-    name: 'assignee',
-  })
-
   const { priority } = watch()
   const values = watch()
-
-  const isPermissionDeleteNotification = user?.permissions === 'admin' || task.userId === user?._id
 
   const isDirtyTask = isEqual(task, values)
 
@@ -174,13 +124,6 @@ export default function KanbanDetails({ task, openDetails, onCloseDetails }: Pro
       mutate(endpoints.tasks.getAllTasks)
     })
 
-  const onDeleteNotification = async (notificationId: string) =>
-    await axios.delete(endpoints.notifications.deleteNotification(notificationId)).then(() => {
-      enqueueSnackbar('Notificação deletada com sucesso')
-
-      mutate(endpoints.notifications.getAllNotifications)
-    })
-
   const onUpdateFiles = async (files: Array<File>) =>
     await axios.put(endpoints.tasks.updateTask(task._id), { ...task, files }).then(() => {
       enqueueSnackbar('Arquivo deletado com sucesso')
@@ -209,8 +152,6 @@ export default function KanbanDetails({ task, openDetails, onCloseDetails }: Pro
       }
     }
   }
-
-  const isNotification = notifications?.some(({ taskId }) => taskId === task._id)
 
   return (
     <>
@@ -248,62 +189,6 @@ export default function KanbanDetails({ task, openDetails, onCloseDetails }: Pro
 
           <Stack direction="column" justifyContent="space-between" height="100%">
             <Stack spacing={3} sx={{ p: 2 }}>
-              {isNotification && (
-                <>
-                  <Stack direction="column" alignItems="left" spacing={1}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <StyledLabel>Notificações Abertas</StyledLabel>
-
-                      <Tooltip
-                        arrow
-                        title="Para ver as notificações abra o icone de notificações na home"
-                      >
-                        <IconButton>
-                          <Iconify icon="eva:question-mark-circle-fill" />
-                        </IconButton>
-                      </Tooltip>
-                    </Stack>
-
-                    <Stack direction="row" flexWrap="wrap" spacing={1}>
-                      {notifications
-                        ?.filter((notification) => notification.taskId === task._id)
-                        .map((notification) => (
-                          <Chip
-                            key={notification._id}
-                            {...(isPermissionDeleteNotification && {
-                              onDelete: () => onDeleteNotification(notification._id),
-                            })}
-                            label={notification.title}
-                            variant="soft"
-                            sx={{
-                              color: 'text.primary',
-                              borderRadius: 1,
-                            }}
-                          />
-                        ))}
-                    </Stack>
-                  </Stack>
-
-                  <Divider />
-                </>
-              )}
-
-              <Stack direction="column" alignItems="left" spacing={1}>
-                <StyledLabel>Criado por</StyledLabel>
-
-                <Avatar alt={user?.name} color="secondary">
-                  <Tooltip title={user?.name}>
-                    <Typography variant="button">{user?.name.slice(0, 3).toUpperCase()}</Typography>
-                  </Tooltip>
-                </Avatar>
-              </Stack>
-
-              <Responsible
-                assignee={values.assignee}
-                onAppend={assignee.append}
-                onRemove={assignee.remove}
-              />
-
               <RHFDatePiker<{ dueDate: Date }> label="Data de vencimento" name="dueDate" />
 
               <PriorityStatus
@@ -373,30 +258,6 @@ export default function KanbanDetails({ task, openDetails, onCloseDetails }: Pro
               <RHFTextField fullWidth multiline name="description" label="Descrição" />
 
               <RHFUpload multiple name="files" onUpdateFiles={onUpdateFiles} />
-
-              <Divider />
-
-              <ButtonGroup fullWidth>
-                <Button
-                  fullWidth
-                  onClick={openAddNotification.onTrue}
-                  startIcon={<Iconify icon="mdi:bell-plus" />}
-                  variant="soft"
-                  color="inherit"
-                >
-                  Notificação
-                </Button>
-
-                <Button
-                  fullWidth
-                  onClick={viewHistory.onTrue}
-                  startIcon={<Iconify icon="mdi:file-restore" />}
-                  variant="soft"
-                  color="inherit"
-                >
-                  Ver histórico
-                </Button>
-              </ButtonGroup>
             </Stack>
 
             <Stack
@@ -474,38 +335,8 @@ export default function KanbanDetails({ task, openDetails, onCloseDetails }: Pro
               </Button>
             }
           />
-
-          <ConfirmDialog
-            open={viewHistory.value}
-            onClose={viewHistory.onFalse}
-            title="Histórico"
-            disablePortal={false}
-            content={
-              <>
-                <Stack direction="column" spacing={1}>
-                  <Typography variant="body2">Histórico de alterações da tarefa</Typography>
-
-                  {task.history?.map((history, index) => {
-                    const user = users?.find((user) => user._id === history.userId)
-
-                    return (
-                      <Stack key={index} direction="row" spacing={1}>
-                        <Typography variant="body2">
-                          {dayjs(history?.date).format('DD/MM/YYYY HH:mm')}
-                        </Typography>
-
-                        <Typography variant="body2">{user?.name}</Typography>
-                      </Stack>
-                    )
-                  })}
-                </Stack>
-              </>
-            }
-          />
         </Drawer>
       </FormProvider>
-
-      <NotificationAdd openAddNotification={openAddNotification} taskId={task._id} />
     </>
   )
 }

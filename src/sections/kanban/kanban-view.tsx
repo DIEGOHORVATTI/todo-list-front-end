@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { DragDropContext, Droppable } from '@hello-pangea/dnd'
 
@@ -11,21 +11,9 @@ import { hideScroll } from '@/theme/css'
 
 import { useRequest } from '@/hooks/use-request'
 
-import { endpoints, userCurrencyStorage } from '@/constants/config'
+import { endpoints } from '@/constants/config'
 
-import {
-  Alert,
-  Badge,
-  Button,
-  ButtonGroup,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  Paper,
-  Typography,
-} from '@mui/material'
+import { Button, ButtonGroup, Grid, Paper } from '@mui/material'
 
 import { KanbanColumnSkeleton } from './components/kanban-skeleton'
 import { KanbanColumnAdd } from './components/column/kanban-column-add'
@@ -38,23 +26,12 @@ import { ArchivedList } from './kanban-task-unarchive'
 
 import { IKanbanBoard, IKanbanColumn, IKanbanTask } from '@/types/kanban'
 
-import { User } from '@/types/user'
-import { Notification } from '@/types/Notification'
-
 import { KanbanBoardAdd } from '@/sections/kanban/components/board/board-add'
 import { BoardActions } from '@/sections/kanban/components/board/board-actions'
-import { Iconify } from '@/components'
-import { useBoolean } from '@/hooks/use-boolean'
-import { Notifications } from '@/sections/notifications'
 
 export const KanbanView = () => {
-  const dialogNotifications = useBoolean()
   const [showArchived, setShowArchived] = useState(false)
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null)
-
-  const { data: user } = useRequest<User>({
-    url: endpoints.user.getUser,
-  })
 
   const { data: boards, isLoading } = useRequest<Array<IKanbanBoard>>({
     url: endpoints.boards.getAllBoards,
@@ -68,31 +45,7 @@ export const KanbanView = () => {
     url: endpoints.tasks.getAllTasks,
   })
 
-  const { data: notifications } = useRequest<Array<Notification>>({
-    url: endpoints.notifications.getAllNotifications,
-  })
-
-  const isPermissionAdmin = user?.permissions === 'admin'
-
   const board = boardMescle({ selectedBoard, boards, columns, tasks })
-
-  const isUserValid = userCurrencyStorage !== 'anonymous'
-
-  const isUnreadNotification = notifications?.some(
-    (notification) =>
-      !notification.view &&
-      (notification.assignee?.some((id) => id.userId === user?._id) || isPermissionAdmin)
-  )
-
-  useEffect(() => {
-    if (boards?.length && !selectedBoard) {
-      setSelectedBoard(
-        // seleciona o primeiro board que o usuário tem acesso ou é admin
-        boards.find((board) => board.usersIds.includes(user?._id || '') || isPermissionAdmin)?.id ||
-          null
-      )
-    }
-  }, [boards, user])
 
   return (
     <Container maxWidth="xl" sx={{ mt: 1 }}>
@@ -104,18 +57,7 @@ export const KanbanView = () => {
         </Stack>
       )}
 
-      {!isLoading && !isUserValid && (
-        <Stack p={2}>
-          <Alert severity="warning" sx={{ mb: 2 }}>
-            <Typography variant="body2">
-              Você está visualizando a aplicação como um usuário anônimo. Para ter acesso a todas as
-              funcionalidades, peça ao administrador para criar uma conta de usuário para você.
-            </Typography>
-          </Alert>
-        </Stack>
-      )}
-
-      {!isLoading && isUserValid && (
+      {!isLoading && (
         <Stack direction="column" spacing={1}>
           <Stack direction="row" spacing={1} alignItems="center">
             <Paper
@@ -132,20 +74,6 @@ export const KanbanView = () => {
                   onClick={() => setShowArchived((prevState) => !prevState)}
                 >
                   {showArchived ? 'Quadros' : 'Arquivados'}
-                </Button>
-
-                <Button
-                  variant="soft"
-                  color="inherit"
-                  onClick={() => isUnreadNotification && dialogNotifications.onTrue()}
-                >
-                  <Badge
-                    {...(isUnreadNotification && {
-                      badgeContent: <Iconify icon="codicon:circle-filled" color="warning.main" />,
-                    })}
-                  >
-                    <Iconify icon="mdi:bell" />
-                  </Badge>
                 </Button>
               </ButtonGroup>
             </Paper>
@@ -168,16 +96,9 @@ export const KanbanView = () => {
                 <Grid item xs={12} sx={{ width: 100 }}>
                   <Stack sx={{ width: '100%', maxHeight: 500 }}>
                     <Stack direction="row" sx={{ overflowX: 'auto' }} spacing={1}>
-                      {boards
-                        ?.filter(
-                          (board) => board.usersIds.includes(user?._id || '') || isPermissionAdmin
-                        )
-                        .map((board, index) => (
-                          <BoardActions
-                            key={index}
-                            {...{ setSelectedBoard, selectedBoard, board }}
-                          />
-                        ))}
+                      {boards?.map((board, index) => (
+                        <BoardActions key={index} {...{ setSelectedBoard, selectedBoard, board }} />
+                      ))}
                     </Stack>
                   </Stack>
                 </Grid>
@@ -230,30 +151,6 @@ export const KanbanView = () => {
           </DragDropContext>
         </Stack>
       )}
-
-      <Dialog
-        fullWidth
-        maxWidth="md"
-        open={dialogNotifications.value}
-        onClose={() => dialogNotifications.onFalse()}
-      >
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <DialogTitle>Notificações</DialogTitle>
-
-          <IconButton onClick={dialogNotifications.onFalse} sx={{ mx: 2 }}>
-            <Iconify icon="mdi:close" />
-          </IconButton>
-        </Stack>
-
-        <DialogContent sx={{ typography: 'body2' }}>
-          <Notifications
-            notifications={notifications?.filter(
-              (notification) =>
-                notification.assignee?.some((id) => id.userId === user?._id) || isPermissionAdmin
-            )}
-          />
-        </DialogContent>
-      </Dialog>
     </Container>
   )
 }

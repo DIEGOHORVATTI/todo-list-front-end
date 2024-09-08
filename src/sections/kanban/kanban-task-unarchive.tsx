@@ -5,12 +5,10 @@ import {
   Divider,
   MenuItem,
   Stack,
-  Avatar,
   Tooltip,
   Grid,
   Box,
   styled,
-  Typography,
   Chip,
   Container,
 } from '@mui/material'
@@ -22,7 +20,7 @@ import { Iconify } from '@/components/iconify'
 
 import { useRequest } from '@/hooks/use-request'
 
-import { COLORS, endpoints } from '@/constants/config'
+import { endpoints } from '@/constants/config'
 
 import dayjs from 'dayjs'
 import { enqueueSnackbar } from 'notistack'
@@ -39,7 +37,6 @@ import { ConfirmDialog } from '@/components/custom-dialog'
 import { DatePicker } from '@mui/x-date-pickers'
 import { CopyClipboard } from '@/components/CopyClipboard'
 
-import { User } from '@/types/user'
 import { PriorityStatus } from '@/components/PriorityStatus'
 
 const StyledLabel = styled('span')(({ theme }) => ({
@@ -54,11 +51,6 @@ export const ArchivedList = () => {
   const openDetails = useBoolean()
 
   const [task, setTask] = useState<IKanbanTask>()
-
-  const { data: user } = useRequest<User>({
-    url: endpoints.user.getUserById(task?.userId || ''),
-    stopRequest: !task?.userId,
-  })
 
   const { data: columns } = useRequest<Array<IKanbanColumn>>({
     url: endpoints.columns.getAllColumns,
@@ -230,44 +222,6 @@ export const ArchivedList = () => {
           content={
             <Container>
               <Stack spacing={3}>
-                <Stack direction="column" alignItems="left" spacing={1}>
-                  <StyledLabel>Criado por</StyledLabel>
-
-                  <Avatar alt={user?.name} color="secondary">
-                    <Tooltip title={user?.name}>
-                      <Typography variant="button">
-                        {user?.name.slice(0, 3).toUpperCase()}
-                      </Typography>
-                    </Tooltip>
-                  </Avatar>
-                </Stack>
-
-                <Stack direction="column" alignItems="left" spacing={1}>
-                  <StyledLabel>Responsáveis</StyledLabel>
-
-                  {Boolean(!task?.categories?.length) && (
-                    <Avatar sx={{ bgcolor: 'background.neutral', color: 'text.primary' }}>
-                      <Typography variant="button">N/A</Typography>
-                    </Avatar>
-                  )}
-
-                  <Stack direction="row" flexWrap="wrap" alignItems="center" spacing={1}>
-                    {task?.assignee?.map(({ userId }, index) => {
-                      const { data: user } = useRequest<User>({
-                        url: endpoints.user.getUserById(userId),
-                      })
-
-                      return (
-                        <Avatar key={index} alt={user?.name} color={COLORS[index]}>
-                          <Typography variant="button">
-                            {user?.name.slice(0, 3).toUpperCase()}
-                          </Typography>
-                        </Avatar>
-                      )
-                    })}
-                  </Stack>
-                </Stack>
-
                 <DatePicker
                   disabled
                   value={task?.dueDate ? new Date(task.dueDate) : new Date()}

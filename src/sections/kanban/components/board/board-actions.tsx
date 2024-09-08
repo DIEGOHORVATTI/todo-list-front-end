@@ -18,7 +18,6 @@ import { UpdateBoard } from './board-update'
 import { mutate } from 'swr'
 import { Iconify } from '@/components/iconify'
 import { useRequest } from '@/hooks/use-request'
-import { User } from '@/types/user'
 
 type Props = {
   setSelectedBoard: React.Dispatch<React.SetStateAction<string | null>>
@@ -34,14 +33,8 @@ export const BoardActions = ({ setSelectedBoard, selectedBoard, board }: Props) 
     url: endpoints.columns.getAllColumns,
   })
 
-  const { data: user } = useRequest<User>({
-    url: endpoints.user.getUser,
-  })
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [lastTap, setLastTap] = useState<number>(0)
-
-  const isPermissionAdmin = user?.permissions === 'admin'
 
   const handleMouseDown = (event: MouseEvent<HTMLButtonElement>) => {
     switch (event.button) {
@@ -49,7 +42,7 @@ export const BoardActions = ({ setSelectedBoard, selectedBoard, board }: Props) 
         setSelectedBoard(board.id)
         break
       case 2:
-        isPermissionAdmin && setAnchorEl(event.currentTarget)
+        setAnchorEl(event.currentTarget)
         break
     }
   }

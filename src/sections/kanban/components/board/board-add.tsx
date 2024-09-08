@@ -15,15 +15,8 @@ import { endpoints } from '@/constants/config'
 
 import { IKanbanBoard } from '@/types/kanban'
 
-import { useRequest } from '@/hooks/use-request'
-import { User } from '@/types/user'
-
 export const KanbanBoardAdd = () => {
   const [boardName, setBoardName] = useState('')
-
-  const { data: user } = useRequest<User>({
-    url: endpoints.user.getUser,
-  })
 
   const openAddBoard = useBoolean()
 
@@ -31,7 +24,6 @@ export const KanbanBoardAdd = () => {
     await axios
       .post(endpoints.boards.createBoard, {
         name,
-        usersIds: [user?._id],
         ordered: [],
         columnIds: [],
       })
