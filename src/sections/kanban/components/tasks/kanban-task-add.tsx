@@ -10,7 +10,7 @@ import { enqueueSnackbar } from 'notistack'
 
 import { priorityValues } from '@/shared/priorityValues'
 
-import { endpoints, userCurrencyStorage } from '@/constants/config'
+import { endpoints } from '@/constants/config'
 import { IKanbanColumn, IKanbanTask } from '@/types/kanban'
 
 type Props = {
@@ -30,7 +30,6 @@ export const KanbanTaskAdd = ({ onCloseAddTask, column }: Props) => {
       description: '...',
       assignee: [],
       dueDate: new Date(),
-      userId: userCurrencyStorage,
     })
 
     await axios.put(endpoints.columns.updateColumn(column.id), {
