@@ -1,11 +1,10 @@
 'use client'
 
-import { axios } from '@/utils/axios'
-import { AxiosError, AxiosRequestConfig, Method } from 'axios'
-
 import { enqueueSnackbar } from 'notistack'
-
 import useSWR, { SWRConfiguration } from 'swr'
+
+import { AxiosError, AxiosRequestConfig, Method } from 'axios'
+import { axios } from '@/utils/axios'
 
 type HookOptions = {
   headers?: Record<string, string>
@@ -13,16 +12,12 @@ type HookOptions = {
   data?: Record<string, any>
 }
 
-export interface ResponseWithMessage {
-  errors?: []
-}
+type Error<T> = AxiosError<T, { message: string; status: number }>
 
-export type Error<T> = AxiosError<T, { message: string; status: number }>
-
-export type UseRequestProps = SWRConfiguration & {
+export type UseRequestSWRProps = SWRConfiguration & {
   url: string
-  queryKey?: string
   silent?: boolean
+  queryKey?: string
   stopRequest?: boolean
   method?: Method
   options?: HookOptions
@@ -34,15 +29,15 @@ export type UseRequestProps = SWRConfiguration & {
  * @param {boolean} silent - If the request should show a snackbar with the response message
  * @param {Method} method - The method to make the request
  */
-export function useRequest<T>({
-  url,
+export function useRequestSWR<T>({
+  url = '/set-a-url',
   method = 'GET',
   silent = false,
   stopRequest = false,
   options,
   queryKey,
   ...rest
-}: UseRequestProps) {
+}: UseRequestSWRProps) {
   const axiosConfig: AxiosRequestConfig = {
     method,
     url,
@@ -52,35 +47,38 @@ export function useRequest<T>({
   }
 
   const fetcher = async () => {
-    try {
-      const response = stopRequest ? { data: {} } : await axios(axiosConfig)
+    const response = await axios(axiosConfig)
+      .then((response) => {
+        if (!silent && response.data?.message) {
+          enqueueSnackbar(response.data.message, {
+            variant: 'success',
+            preventDuplicate: true,
+          })
+        }
 
-      if (!silent && response.data?.message) {
-        enqueueSnackbar(response.data.message, {
-          variant: 'success',
-          preventDuplicate: true,
-        })
-      }
+        return response
+      })
+      .catch((error) => {
+        const axiosError = error as AxiosError<T>
 
-      return response.data
-    } catch (error) {
-      const axiosError = error as AxiosError<T>
+        if (!silent) {
+          enqueueSnackbar(axiosError.message, {
+            variant: 'error',
+            autoHideDuration: 8000,
+            preventDuplicate: true,
+          })
+        }
 
-      if (!silent) {
-        enqueueSnackbar(axiosError.message, {
-          variant: 'error',
-          autoHideDuration: 8000,
-          preventDuplicate: true,
-        })
-      }
+        throw axiosError
+      })
 
-      throw axiosError
-    }
+    return response.data
   }
 
-  const request = useSWR<T, Error<T>>(url, fetcher, {
+  const key = stopRequest ? null : queryKey ?? url
+
+  const request = useSWR<T, Error<T>>(key, fetcher, {
     ...rest,
-    revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })

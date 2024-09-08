@@ -18,7 +18,7 @@ import { DataGridCustom } from '@/components/data-grid-custom'
 import { MenuPopover } from '@/components/MenuPopover'
 import { Iconify } from '@/components/iconify'
 
-import { useRequest } from '@/hooks/use-request'
+import { useRequestSWR } from '@/hooks/use-request'
 
 import { endpoints } from '@/constants/config'
 
@@ -52,11 +52,11 @@ export const ArchivedList = () => {
 
   const [task, setTask] = useState<IKanbanTask>()
 
-  const { data: columns } = useRequest<Array<IKanbanColumn>>({
+  const { data: columns } = useRequestSWR<Array<IKanbanColumn>>({
     url: endpoints.columns.getAllColumns,
   })
 
-  const { data: tasks } = useRequest<Array<IKanbanTask>>({
+  const { data: tasks } = useRequestSWR<Array<IKanbanTask>>({
     url: endpoints.tasks.getAllTasks,
   })
 

@@ -7,15 +7,6 @@ export type IKanbanTask = {
   priority: PriorityValues
   categories?: string[]
   description: string
-  history?: Array<{
-    _id: string
-    userId: string
-    date: string
-  }>
-  assignee?: Array<{
-    _id: string
-    userId: string
-  }>
   dueDate: Date
   userId: string
   files?: File[]
@@ -32,7 +23,6 @@ export type IKanbanColumn = {
 export type IKanbanBoard = {
   id: string
   name: string
-  usersIds: string[]
   columnIds: string[]
   ordered: string[]
 }

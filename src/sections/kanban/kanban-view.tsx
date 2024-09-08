@@ -1,6 +1,4 @@
-'use client'
-
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { DragDropContext, Droppable } from '@hello-pangea/dnd'
 
@@ -9,7 +7,7 @@ import Container from '@mui/material/Container'
 
 import { hideScroll } from '@/theme/css'
 
-import { useRequest } from '@/hooks/use-request'
+import { useRequestSWR } from '@/hooks/use-request'
 
 import { endpoints } from '@/constants/config'
 
@@ -30,22 +28,28 @@ import { KanbanBoardAdd } from '@/sections/kanban/components/board/board-add'
 import { BoardActions } from '@/sections/kanban/components/board/board-actions'
 
 export const KanbanView = () => {
-  const [showArchived, setShowArchived] = useState(false)
-  const [selectedBoard, setSelectedBoard] = useState<string | null>(null)
-
-  const { data: boards, isLoading } = useRequest<Array<IKanbanBoard>>({
+  const { data: boards, isLoading } = useRequestSWR<Array<IKanbanBoard>>({
     url: endpoints.boards.getAllBoards,
   })
 
-  const { data: columns } = useRequest<Array<IKanbanColumn>>({
+  const { data: columns } = useRequestSWR<Array<IKanbanColumn>>({
     url: endpoints.columns.getAllColumns,
   })
 
-  const { data: tasks } = useRequest<Array<IKanbanTask>>({
+  const { data: tasks } = useRequestSWR<Array<IKanbanTask>>({
     url: endpoints.tasks.getAllTasks,
   })
 
+  const [showArchived, setShowArchived] = useState(false)
+  const [selectedBoard, setSelectedBoard] = useState<string | null>(null)
+
   const board = boardMescle({ selectedBoard, boards, columns, tasks })
+
+  useEffect(() => {
+    if (selectedBoard === null && boards?.length) {
+      setSelectedBoard(boards[0]?.id)
+    }
+  }, [boards])
 
   return (
     <Container maxWidth="xl" sx={{ mt: 1 }}>
@@ -106,12 +110,12 @@ export const KanbanView = () => {
             </Stack>
           </Stack>
 
+          {showArchived && <ArchivedList />}
+
           <DragDropContext onDragEnd={onDragEnd(board)}>
-            {showArchived ? (
-              <ArchivedList />
-            ) : (
-              <Droppable droppableId="board" type="COLUMN" direction="horizontal">
-                {(provided) => (
+            <Droppable droppableId="board" type="COLUMN" direction="horizontal">
+              {(provided) =>
+                !showArchived && (
                   <Stack
                     ref={provided.innerRef}
                     {...provided.droppableProps}
@@ -145,9 +149,9 @@ export const KanbanView = () => {
                       />
                     )}
                   </Stack>
-                )}
-              </Droppable>
-            )}
+                )
+              }
+            </Droppable>
           </DragDropContext>
         </Stack>
       )}

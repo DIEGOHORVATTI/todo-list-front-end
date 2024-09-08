@@ -1,6 +1,8 @@
+'use client'
+
 import 'react-lazy-load-image-component/src/effects/blur.css'
 
-import ThemeProvider from './theme'
+import ThemeProvider, { SettingsValueProps } from './theme'
 
 import ProgressBar from './components/progress-bar'
 import { MotionLazy } from './components/animate/motion-lazy'
@@ -15,24 +17,44 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { Stack } from '@mui/material'
+import { useState } from 'react'
+
+const settingsDefault: SettingsValueProps = {
+  themeMode: 'dark',
+  themeDirection: 'ltr',
+  themeContrast: 'default',
+  themeLayout: 'vertical',
+  themeColorPresets: 'default',
+  themeStretch: false,
+}
+
+const settingsFromLocalStorage: SettingsValueProps = (() => {
+  const storedValue = localStorage.getItem('@taskList:settings')
+
+  return JSON.parse(storedValue || JSON.stringify(settingsDefault))
+})()
 
 export const App = () => {
+  const [settings, setSettings] = useState<SettingsValueProps>(settingsFromLocalStorage)
+
   return (
-    <ThemeProvider
-      settings={{
-        themeMode: 'light',
-        themeDirection: 'ltr',
-        themeContrast: 'default',
-        themeLayout: 'vertical',
-        themeColorPresets: 'default',
-        themeStretch: false,
-      }}
-    >
+    <ThemeProvider settings={settings}>
       <MotionLazy>
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MuiLocalizationProvider dateAdapter={AdapterDateFns}>
               <ProgressBar />
+
+              <button
+                onClick={() =>
+                  setSettings({
+                    ...settings,
+                    themeMode: settings.themeMode === 'dark' ? 'light' : 'dark',
+                  })
+                }
+              >
+                {settings.themeMode}
+              </button>
 
               <Stack direction="column" spacing={2}>
                 <KanbanView />

@@ -9,7 +9,7 @@ import {
   OutlinedTextFieldProps,
   Chip,
 } from '@mui/material'
-import { useRequest, UseRequestProps } from '../../hooks/use-request'
+import { useRequestSWR, UseRequestProps } from '../../hooks/use-request'
 import Image from '../image'
 import { Iconify } from '../iconify'
 
@@ -52,7 +52,7 @@ export const RHFAutocomplete = <Value, Multiple extends boolean | undefined = fa
 }: Omit<Props<Value, Multiple>, 'renderInput'>) => {
   const { control } = useFormContext()
 
-  const { data, isLoading } = useRequest<Value>({
+  const { data, isLoading } = useRequestSWR<Value>({
     url: getRequestUrl?.url || '/set-a-url',
     method: getRequestUrl?.method || 'GET',
     stopRequest: Boolean(!getRequestUrl) || getRequestUrl?.stopRequest,

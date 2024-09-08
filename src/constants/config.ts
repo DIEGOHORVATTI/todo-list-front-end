@@ -1,15 +1,6 @@
 type Id = string | number
 
-export const userCurrencyStorage =
-  localStorage.getItem('userId') ?? (localStorage.getItem('userName') || 'anonymous')
-
-export const categoriesStorage: Array<string> = JSON.parse(
-  localStorage.getItem('categories') || '[]'
-)
-
 export const userNamesStorage: Array<string> = JSON.parse(localStorage.getItem('userNames') || '[]')
-
-const urlEndpointsParams = new URLSearchParams({ userName: userCurrencyStorage }).toString()
 
 export const endpoints = {
   uploads: {
@@ -17,27 +8,27 @@ export const endpoints = {
     deleteUploads: (id: Id) => `/uploads/${id}`,
   },
   boards: {
-    getAllBoards: `/boards?${urlEndpointsParams}`,
+    getAllBoards: '/boards',
     createBoard: '/boards',
-    updateBoard: (id: Id) => `/boards/${id}?${urlEndpointsParams}`,
+    updateBoard: (id: Id) => `/boards/${id}`,
     deleteBoard: (id: Id) => `/boards/${id}`,
   },
   columns: {
     getAllColumns: '/columns',
     createColumn: '/columns',
-    updateColumn: (id: Id) => `/columns/${id}?${urlEndpointsParams}`,
+    updateColumn: (id: Id) => `/columns/${id}`,
     deleteColumn: (id: Id) => `/columns/${id}`,
   },
   tasks: {
-    getAllTasks: `/tasks?${urlEndpointsParams}`,
+    getAllTasks: '/tasks',
     createTask: '/tasks',
     archiveTask: (id: Id) => `/tasks/${id}/archive`,
     getTask: (id: Id) => `/tasks/${id}`,
-    updateTask: (id: Id) => `/tasks/${id}?${urlEndpointsParams}`,
+    updateTask: (id: Id) => `/tasks/${id}`,
     deleteTask: (id: Id) => `/tasks/${id}`,
   },
 }
 
-export const HOST_API = 'htt://localhost:8000'
+export const HOST_API = 'http://localhost:8001'
 
 export const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'] as const

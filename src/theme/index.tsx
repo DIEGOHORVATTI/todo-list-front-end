@@ -18,7 +18,7 @@ import { contrast } from './options/contrast'
 import RTL, { direction } from './options/right-to-left'
 import NextAppDirEmotionCacheProvider from './next-emotion-cache'
 
-type SettingsValueProps = {
+export type SettingsValueProps = {
   themeStretch: boolean
   themeMode: 'light' | 'dark'
   themeDirection: 'rtl' | 'ltr'

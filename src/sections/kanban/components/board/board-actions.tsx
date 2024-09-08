@@ -17,7 +17,7 @@ import { handleTouchStart } from './shared/handleTouchStart'
 import { UpdateBoard } from './board-update'
 import { mutate } from 'swr'
 import { Iconify } from '@/components/iconify'
-import { useRequest } from '@/hooks/use-request'
+import { useRequestSWR } from '@/hooks/use-request'
 
 type Props = {
   setSelectedBoard: React.Dispatch<React.SetStateAction<string | null>>
@@ -29,7 +29,7 @@ export const BoardActions = ({ setSelectedBoard, selectedBoard, board }: Props) 
   const confirmDialogDelete = useBoolean()
   const dialogEdit = useBoolean()
 
-  const { data: columns } = useRequest<Array<any>>({
+  const { data: columns } = useRequestSWR<Array<any>>({
     url: endpoints.columns.getAllColumns,
   })
 
