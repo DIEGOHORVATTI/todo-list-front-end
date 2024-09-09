@@ -1,3 +1,4 @@
+import { KanbanBoard } from './../../../../../backend/src/models/KanbanBoard'
 import { mutate } from 'swr'
 
 import { axios } from '@/utils/axios'
@@ -28,11 +29,27 @@ export const onDragEnd =
       newOrdered.splice(destination.index, 0, draggableId)
 
       await axios
-        .put(endpoints.boards.updateBoard(board.id), {
+        .put<IKanbanBoard>(endpoints.boards.updateBoard(board.id), {
           ...board,
           ordered: newOrdered,
         })
-        .then(() => mutate(endpoints.boards.getAllBoards))
+        .then(({ data }) => {
+          mutate<Array<IKanbanBoard>>(
+            endpoints.boards.getAllBoards,
+            (items) => {
+              const boards = items?.map((item) => {
+                if (item.id === data.id) {
+                  return { ...item, ...data }
+                }
+
+                return item
+              })
+
+              return boards
+            },
+            false
+          )
+        })
 
       return
     }
