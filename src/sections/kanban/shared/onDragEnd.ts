@@ -1,4 +1,3 @@
-import { KanbanBoard } from './../../../../../backend/src/models/KanbanBoard'
 import { mutate } from 'swr'
 
 import { axios } from '@/utils/axios'
@@ -71,7 +70,23 @@ export const onDragEnd =
           ...sourceColumn,
           taskIds: newTaskIds,
         })
-        .then(() => mutate(endpoints.columns.getAllColumns))
+        .then(({ data }) => {
+          mutate<Array<IKanbanColumn>>(
+            endpoints.columns.getAllColumns,
+            (items) => {
+              const columns = items?.map((item) => {
+                if (item.id === data.id) {
+                  return { ...item, ...data }
+                }
+
+                return item
+              })
+
+              return columns
+            },
+            false
+          )
+        })
 
       return
     }
