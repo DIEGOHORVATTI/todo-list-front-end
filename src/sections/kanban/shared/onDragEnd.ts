@@ -28,27 +28,11 @@ export const onDragEnd =
       newOrdered.splice(destination.index, 0, draggableId)
 
       await axios
-        .put<IKanbanBoard>(endpoints.boards.updateBoard(board.id), {
+        .put(endpoints.boards.updateBoard(board.id), {
           ...board,
           ordered: newOrdered,
         })
-        .then(({ data }) => {
-          mutate<Array<IKanbanBoard>>(
-            endpoints.boards.getAllBoards,
-            (items) => {
-              const boards = items?.map((item) => {
-                if (item.id === data.id) {
-                  return { ...item, ...data }
-                }
-
-                return item
-              })
-
-              return boards
-            },
-            false
-          )
-        })
+        .then(() => mutate(endpoints.boards.getAllBoards))
 
       return
     }
@@ -70,23 +54,7 @@ export const onDragEnd =
           ...sourceColumn,
           taskIds: newTaskIds,
         })
-        .then(({ data }) => {
-          mutate<Array<IKanbanColumn>>(
-            endpoints.columns.getAllColumns,
-            (items) => {
-              const columns = items?.map((item) => {
-                if (item.id === data.id) {
-                  return { ...item, ...data }
-                }
-
-                return item
-              })
-
-              return columns
-            },
-            false
-          )
-        })
+        .then(() => mutate(endpoints.columns.getAllColumns))
 
       return
     }
