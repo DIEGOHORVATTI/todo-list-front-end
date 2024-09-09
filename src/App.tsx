@@ -56,7 +56,7 @@ export const App = () => {
       sx={{
         position: 'fixed',
         top: '50%',
-        right: 16,
+        right: (theme) => theme.spacing(2),
         zIndex: 10,
         backgroundColor: 'background.paper',
       }}
