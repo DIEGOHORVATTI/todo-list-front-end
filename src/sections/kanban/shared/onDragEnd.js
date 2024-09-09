@@ -28,7 +28,19 @@ export const onDragEnd =
             ...board,
             ordered: newOrdered,
           })
-          .then(() => mutate(endpoints.boards.getAllBoards))
+          .then((data) => {
+            mutate(endpoints.boards.getAllBoards, (items) => {
+              const boards = items.map((item) => {
+                if (item.id === data.id) {
+                  return data
+                }
+
+                return item
+              })
+
+              return boards
+            })
+          }, false)
 
         return
       }
@@ -50,7 +62,19 @@ export const onDragEnd =
             ...sourceColumn,
             taskIds: newTaskIds,
           })
-          .then(() => mutate(endpoints.columns.getAllColumns))
+          .then((data) => {
+            mutate(endpoints.columns.getAllColumns, (items) => {
+              const columns = items.map((item) => {
+                if (item.id === data.id) {
+                  return data
+                }
+
+                return item
+              })
+
+              return columns
+            })
+          })
 
         return
       }
@@ -76,5 +100,25 @@ export const onDragEnd =
         taskIds: destinationTaskIds,
       })
 
-      mutate(endpoints.columns.getAllColumns)
+      mutate(endpoints.columns.getAllColumns, (items) => {
+        const columns = items.map((item) => {
+          if (item.id === sourceColumn.id) {
+            return {
+              ...sourceColumn,
+              taskIds: sourceTaskIds,
+            }
+          }
+
+          if (item.id === destinationColumn.id) {
+            return {
+              ...destinationColumn,
+              taskIds: destinationTaskIds,
+            }
+          }
+
+          return item
+        })
+
+        return columns
+      }, false)
     }

@@ -20,9 +20,7 @@ export const KanbanTaskAdd = ({ onCloseAddTask, column }) => {
       name,
       archived: false,
       priority: priorityValues[0],
-      categories: [],
       description: '...',
-      assignee: [],
       dueDate: new Date(),
     })
 
