@@ -3,10 +3,8 @@ import { Draggable } from '@hello-pangea/dnd'
 import { useTheme } from '@mui/material/styles'
 
 import Stack from '@mui/material/Stack'
-import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import Paper, { PaperProps } from '@mui/material/Paper'
-import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup'
 
 import { useBoolean } from '@/hooks/use-boolean'
 
@@ -15,8 +13,6 @@ import { Iconify } from '@/components/iconify'
 import KanbanDetails from './kanban-details'
 
 import { bgBlur } from '@/theme/css'
-
-import { COLORS } from '@/constants/config'
 
 import { IKanbanTask } from '@/types/kanban'
 
@@ -87,25 +83,6 @@ export const KanbanTaskItem = ({ task, index, sx, ...other }: Props) => {
               {renderPriority}
 
               <Typography variant="subtitle2">{task.name}</Typography>
-
-              <Stack direction="row" alignItems="center">
-                <AvatarGroup
-                  sx={{
-                    [`& .${avatarGroupClasses.avatar}`]: {
-                      width: 30,
-                      height: 30,
-                    },
-                  }}
-                >
-                  {task?.assignee?.map((user, index) => (
-                    <Avatar alt={user.userId} key={index} color={COLORS[index]}>
-                      <Typography variant="button" sx={{ fontSize: 11 }}>
-                        {user?.userId?.slice(0, 3).toUpperCase()}
-                      </Typography>
-                    </Avatar>
-                  ))}
-                </AvatarGroup>
-              </Stack>
 
               <Typography
                 variant="subtitle2"

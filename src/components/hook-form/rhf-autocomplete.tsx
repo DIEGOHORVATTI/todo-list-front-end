@@ -9,7 +9,7 @@ import {
   OutlinedTextFieldProps,
   Chip,
 } from '@mui/material'
-import { useRequestSWR, UseRequestProps } from '../../hooks/use-request'
+import { useRequestSWR, UseRequestSWRProps } from '../../hooks/use-request'
 import Image from '../image'
 import { Iconify } from '../iconify'
 
@@ -29,7 +29,7 @@ type Props<Value, Multiple extends boolean | undefined> = Omit<
     label?: string
     placeholder?: string
     required?: boolean
-    getRequestUrl?: UseRequestProps & {
+    getRequestUrl?: UseRequestSWRProps & {
       key?: string
       options?: (params: Value) => Array<Option>
     }
