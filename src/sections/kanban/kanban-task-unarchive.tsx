@@ -1,17 +1,6 @@
 import { mutate } from 'swr'
 
-import {
-  Button,
-  Divider,
-  MenuItem,
-  Stack,
-  Tooltip,
-  Grid,
-  Box,
-  styled,
-  Chip,
-  Container,
-} from '@mui/material'
+import { Button, Divider, MenuItem, Stack, Container } from '@mui/material'
 import { Label } from '@/components/label'
 
 import { DataGridCustom } from '@/components/data-grid-custom'
@@ -38,14 +27,6 @@ import { DatePicker } from '@mui/x-date-pickers'
 import { CopyClipboard } from '@/components/CopyClipboard'
 
 import { PriorityStatus } from '@/components/PriorityStatus'
-
-const StyledLabel = styled('span')(({ theme }) => ({
-  ...theme.typography.caption,
-  width: '100%',
-  flexShrink: 0,
-  color: theme.palette.text.secondary,
-  fontWeight: theme.typography.fontWeightSemiBold,
-}))
 
 export const ArchivedList = () => {
   const openDetails = useBoolean()
@@ -123,34 +104,6 @@ export const ArchivedList = () => {
           {
             field: 'status',
             headerName: 'Status',
-          },
-          {
-            field: 'categories',
-            headerName: 'Categorias',
-            width: 200,
-            renderCell: ({ row }) => (
-              <Grid container columnSpacing={0.5} justifyContent="center">
-                {row?.categories?.map((category, index) => {
-                  return (
-                    <Grid key={index} item xs="auto" p={0}>
-                      <Tooltip title={category}>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            justifyContent: 'left',
-                            alignContent: 'center',
-                          }}
-                        >
-                          <Label key={category} color="primary">
-                            {category}
-                          </Label>
-                        </Box>
-                      </Tooltip>
-                    </Grid>
-                  )
-                })}
-              </Grid>
-            ),
           },
           {
             field: 'description',
@@ -234,18 +187,6 @@ export const ArchivedList = () => {
                 />
 
                 <PriorityStatus priority={task?.priority || 'baixa'} />
-
-                <Stack direction="row" flexWrap="wrap" spacing={1}>
-                  <StyledLabel>Categorias</StyledLabel>
-
-                  {task?.categories?.map((category, index) => (
-                    <Chip key={index} variant="soft" label={category} />
-                  ))}
-
-                  {Boolean(!task?.categories?.length) && (
-                    <Chip variant="soft" label="Sem categoria" />
-                  )}
-                </Stack>
 
                 <CopyClipboard
                   fullWidth
