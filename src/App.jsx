@@ -2,7 +2,7 @@
 
 import 'react-lazy-load-image-component/src/effects/blur.css'
 
-import ThemeProvider, { SettingsValueProps } from './theme'
+import ThemeProvider from './theme'
 
 import ProgressBar from './components/progress-bar'
 import { MotionLazy } from './components/animate/motion-lazy'
@@ -20,7 +20,7 @@ import { IconButton, Stack } from '@mui/material'
 import { useState } from 'react'
 import { Iconify } from './components'
 
-const settingsDefault: SettingsValueProps = {
+const settingsDefault = {
   themeMode: 'dark',
   themeDirection: 'ltr',
   themeContrast: 'default',
@@ -29,16 +29,16 @@ const settingsDefault: SettingsValueProps = {
   themeStretch: false,
 }
 
-const settingsFromLocalStorage: SettingsValueProps = (() => {
+const settingsFromLocalStorage = (() => {
   const storedValue = localStorage.getItem('@taskList:settings')
 
   return JSON.parse(storedValue || JSON.stringify(settingsDefault))
 })()
 
 export const App = () => {
-  const [settings, setSettings] = useState<SettingsValueProps>(settingsFromLocalStorage)
+  const [settings, setSettings] = useState(settingsFromLocalStorage)
 
-  const hadleSettings = (newSettings: SettingsValueProps) => {
+  const hadleSettings = (newSettings) => {
     setSettings(newSettings)
     localStorage.setItem('@taskList:settings', JSON.stringify(newSettings))
   }
