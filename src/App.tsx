@@ -16,8 +16,9 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
-import { Stack } from '@mui/material'
+import { IconButton, Stack } from '@mui/material'
 import { useState } from 'react'
+import { Iconify } from './components'
 
 const settingsDefault: SettingsValueProps = {
   themeMode: 'dark',
@@ -42,6 +43,8 @@ export const App = () => {
     localStorage.setItem('@taskList:settings', JSON.stringify(newSettings))
   }
 
+  const isDark = settings.themeMode === 'dark'
+
   return (
     <ThemeProvider settings={settings}>
       <MotionLazy>
@@ -50,16 +53,23 @@ export const App = () => {
             <MuiLocalizationProvider dateAdapter={AdapterDateFns}>
               <ProgressBar />
 
-              <button
+              <IconButton
+                sx={{
+                  position: 'fixed',
+                  top: '50%',
+                  right: 16,
+                  zIndex: 10,
+                  backgroundColor: 'background.paper',
+                }}
                 onClick={() =>
                   hadleSettings({
                     ...settings,
-                    themeMode: settings.themeMode === 'dark' ? 'light' : 'dark',
+                    themeMode: isDark ? 'light' : 'dark',
                   })
                 }
               >
-                {settings.themeMode}
-              </button>
+                {!isDark ? <Iconify icon="bi:moon-stars-fill" /> : <Iconify icon="bi:sun-fill" />}
+              </IconButton>
 
               <Stack direction="column" spacing={2}>
                 <KanbanView />
