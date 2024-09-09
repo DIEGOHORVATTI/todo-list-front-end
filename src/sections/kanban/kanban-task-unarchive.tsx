@@ -86,9 +86,6 @@ export const ArchivedList = () => {
         row={row || []}
         columns={[
           {
-            field: '_id',
-          },
-          {
             field: 'name',
             headerName: 'Nome',
           },
@@ -174,7 +171,7 @@ export const ArchivedList = () => {
           title={`Detalhes da tarefa ${task?.name}`}
           content={
             <Container>
-              <Stack spacing={3}>
+              <Stack spacing={2} py={1}>
                 <DatePicker
                   disabled
                   value={task?.dueDate ? new Date(task.dueDate) : new Date()}
