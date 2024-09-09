@@ -37,6 +37,11 @@ const settingsFromLocalStorage: SettingsValueProps = (() => {
 export const App = () => {
   const [settings, setSettings] = useState<SettingsValueProps>(settingsFromLocalStorage)
 
+  const hadleSettings = (newSettings: SettingsValueProps) => {
+    setSettings(newSettings)
+    localStorage.setItem('@taskList:settings', JSON.stringify(newSettings))
+  }
+
   return (
     <ThemeProvider settings={settings}>
       <MotionLazy>
@@ -47,7 +52,7 @@ export const App = () => {
 
               <button
                 onClick={() =>
-                  setSettings({
+                  hadleSettings({
                     ...settings,
                     themeMode: settings.themeMode === 'dark' ? 'light' : 'dark',
                   })
