@@ -45,6 +45,12 @@ export const App = () => {
 
   const isDark = settings.themeMode === 'dark'
 
+  const themeToggle = () =>
+    hadleSettings({
+      ...settings,
+      themeMode: isDark ? 'light' : 'dark',
+    })
+
   const themeToggleButton = (
     <IconButton
       sx={{
@@ -54,16 +60,12 @@ export const App = () => {
         zIndex: 10,
         backgroundColor: 'background.paper',
       }}
-      onClick={() =>
-        hadleSettings({
-          ...settings,
-          themeMode: isDark ? 'light' : 'dark',
-        })
-      }
+      onClick={themeToggle}
     >
       {!isDark ? <Iconify icon="bi:moon-stars-fill" /> : <Iconify icon="bi:sun-fill" />}
     </IconButton>
   )
+
   return (
     <ThemeProvider settings={settings}>
       <MotionLazy>
