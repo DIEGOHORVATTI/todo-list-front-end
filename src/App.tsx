@@ -45,6 +45,25 @@ export const App = () => {
 
   const isDark = settings.themeMode === 'dark'
 
+  const themeToggleButton = (
+    <IconButton
+      sx={{
+        position: 'fixed',
+        top: '50%',
+        right: 16,
+        zIndex: 10,
+        backgroundColor: 'background.paper',
+      }}
+      onClick={() =>
+        hadleSettings({
+          ...settings,
+          themeMode: isDark ? 'light' : 'dark',
+        })
+      }
+    >
+      {!isDark ? <Iconify icon="bi:moon-stars-fill" /> : <Iconify icon="bi:sun-fill" />}
+    </IconButton>
+  )
   return (
     <ThemeProvider settings={settings}>
       <MotionLazy>
@@ -53,23 +72,7 @@ export const App = () => {
             <MuiLocalizationProvider dateAdapter={AdapterDateFns}>
               <ProgressBar />
 
-              <IconButton
-                sx={{
-                  position: 'fixed',
-                  top: '50%',
-                  right: 16,
-                  zIndex: 10,
-                  backgroundColor: 'background.paper',
-                }}
-                onClick={() =>
-                  hadleSettings({
-                    ...settings,
-                    themeMode: isDark ? 'light' : 'dark',
-                  })
-                }
-              >
-                {!isDark ? <Iconify icon="bi:moon-stars-fill" /> : <Iconify icon="bi:sun-fill" />}
-              </IconButton>
+              {themeToggleButton}
 
               <Stack direction="column" spacing={2}>
                 <KanbanView />
