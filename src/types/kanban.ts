@@ -8,7 +8,6 @@ export type IKanbanTask = {
   categories?: string[]
   description: string
   dueDate: Date
-  userId: string
   files?: File[]
 }
 

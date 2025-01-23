@@ -67,16 +67,7 @@ export default function KanbanDetails({ task, openDetails, onCloseDetails }: Pro
     priority: Yup.mixed<PriorityValues>().oneOf(priorityValues).required(),
     categories: Yup.array().of(Yup.string().required()).optional(),
     description: Yup.string().required(),
-    assignee: Yup.array()
-      .of(
-        Yup.object({
-          _id: Yup.string().required(),
-          userId: Yup.string().required(),
-        })
-      )
-      .optional(),
     dueDate: Yup.date().required(),
-    userId: Yup.string().required(),
   })
 
   const methods = useForm<AddTask>({
