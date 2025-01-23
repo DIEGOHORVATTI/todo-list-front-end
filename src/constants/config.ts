@@ -1,7 +1,5 @@
 type Id = string | number
 
-export const userNamesStorage: Array<string> = JSON.parse(localStorage.getItem('userNames') || '[]')
-
 export const endpoints = {
   uploads: {
     createUploads: '/uploads',
@@ -29,6 +27,6 @@ export const endpoints = {
   },
 }
 
-export const HOST_API = 'https://todo-list-back-end-production.up.railway.app'
+export const HOST_API = 'http://localhost:8001'
 
 export const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'] as const
